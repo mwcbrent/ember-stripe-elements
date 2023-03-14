@@ -45,7 +45,7 @@ export default Service.extend({
     }
   },
 
-  load(publishableKey = null) {
+  load(publishableKey = null, params) {
     if (publishableKey) {
       this.set('publishableKey', publishableKey);
     }
@@ -57,12 +57,12 @@ export default Service.extend({
     let doLoad = shouldLoad ? loadScript("https://js.stripe.com/v3/") : resolve();
 
     return doLoad.then(() => {
-      this.configure();
+      this.configure(params);
       this.set('didLoad', true);
     });
   },
 
-  configure() {
+  configure(params) {
     let didConfigure = this.get('didConfigure');
 
     if (!didConfigure) {
@@ -72,7 +72,7 @@ export default Service.extend({
         throw new EmberError("stripev3: Missing Stripe key, please set `ENV.stripe.publishableKey` in config.environment.js");
       }
 
-      let stripe = new Stripe(publishableKey);
+      let stripe = new Stripe(publishableKey, params);
       let functions = getProperties(stripe, STRIPE_FUNCTIONS);
       setProperties(this, functions);
 
